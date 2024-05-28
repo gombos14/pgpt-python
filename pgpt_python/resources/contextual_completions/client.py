@@ -172,12 +172,13 @@ class ContextualCompletionsClient:
             _request["context_filter"] = context_filter
         if include_sources is not OMIT:
             _request["include_sources"] = include_sources
+        timeout = self._client_wrapper.httpx_client.timeout
         _response = self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "v1/completions"),
             json=jsonable_encoder(_request),
             headers=self._client_wrapper.get_headers(),
-            timeout=60,
+            timeout=timeout,
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(OpenAiCompletion, _response.json())  # type: ignore
